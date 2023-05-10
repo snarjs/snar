@@ -1,0 +1,37 @@
+{
+  "type": "module",
+  "scripts": {
+    "build": "wireit",
+    "test": "wireit",
+    "serve": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc --pretty",
+      "clean": "if-file-deleted",
+      "files": [
+        "src/**/*.ts",
+        "tsconfig.json"
+      ],
+      "output": [
+        "test.js"
+      ]
+    },
+    "test": {
+      "command": "node test.js",
+      "dependencies": [
+        "build"
+      ]
+    },
+    "serve": {
+      "command": "vite",
+      "dependencies": [
+        "build"
+      ]
+    }
+  },
+  "devDependencies": {
+    "lit": "^2.7.3",
+    "snar": "^2.0.2"
+  }
+}

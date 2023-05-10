@@ -1,0 +1,37 @@
+{
+  "name": "@snar-internal/monorepo",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
+  "bin": {
+    "hihi": "scripts/hihi.js"
+  },
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@esm-bundle/chai": "^4.3.4",
+    "@types/chai": "^4.3.1",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@web/test-runner": "^0.16.0",
+    "@web/test-runner-playwright": "^0.10.0",
+    "eslint": "^8.39.0",
+    "eslint-plugin-import": "^2.27.5",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.2",
+    "prettier": "^2.8.8",
+    "typescript": "^5.0.4",
+    "wireit": "^0.9.5"
+  },
+  "lint-staged": {
+    "**/*.{cjs,html,js,json,md,ts}": "prettier --write"
+  }
+}

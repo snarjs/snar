@@ -1,0 +1,173 @@
+import { state } from "snar";
+import {
+  LitElementControllerHost,
+  // LitElementControllerHost,
+  SingleHostController,
+} from "../../../controllers/single-host-controller.js";
+import { withController } from "../../../controllers/decorators/with-controller.js";
+import { assert } from "@esm-bundle/chai";
+import { generateElementName } from "../../test-helpers.js";
+import { LitElement } from "lit";
+import { MultiHostController } from "../../../controllers/multi-host-controller.js";
+
+suite("@withController", () => {
+  let container: HTMLElement;
+
+  setup(() => {
+    container = document.createElement("div");
+    document.body.appendChild(container);
+  });
+
+  teardown(() => {
+    container?.parentNode?.removeChild(container);
+  });
+
+  suite("`SingleHostController`", () => {
+    test("connects to the element (object version)", () => {
+      const c = new SingleHostController();
+      @withController(c)
+      class E extends LitElement {}
+      customElements.define(generateElementName(), E);
+      const e = new E();
+      assert.equal(c.host, e);
+      // @ts-ignore
+      assert.include(e.__controllers, c);
+      // @ts-ignore
+      assert.equal(e.__controllers[0].host, e);
+    });
+    test("connects to the element (class version)", () => {
+      @withController(SingleHostController)
+      class E extends LitElementControllerHost {}
+      customElements.define(generateElementName(), E);
+      const e = new E();
+      // @ts-ignore
+      assert.lengthOf(e.__controllers, 1);
+      // @ts-ignore
+      assert.equal(e.__controllers[0].host, e);
+    });
+
+    test("`controller` handler is available on LitElementControllerHost (object version)", () => {
+      const c = new SingleHostController();
+      @withController(c)
+      class E extends LitElementControllerHost {}
+      customElements.define(generateElementName(), E);
+      const e = new E();
+      assert.exists(e.controller);
+      assert.equal(e.controller, c);
+      assert.equal(e.controller.host, e);
+    });
+    test("`controller` handler is available on LitElementControllerHost (class version)", () => {
+      @withController(SingleHostController)
+      class E extends LitElementControllerHost {}
+      customElements.define(generateElementName(), E);
+      const e = new E();
+      assert.exists(e.controller);
+      assert.equal(e.controller.host, e);
+    });
+
+    test("`controller` handler is available on LitElementControllerHost extended class (object version)", () => {
+      class SuperHost extends LitElementControllerHost {}
+      const c = new SingleHostController();
+      @withController(c)
+      class E extends SuperHost {}
+      customElements.define(generateElementName(), E);
+      const e = new E();
+      assert.exists(e.controller);
+      assert.equal(e.controller, c);
+    });
+    test("`controller` handler is available on LitElementControllerHost extended class (class version)", () => {
+      class SuperHost extends LitElementControllerHost {}
+      @withController(SingleHostController)
+      class E extends SuperHost {}
+      customElements.define(generateElementName(), E);
+      const e = new E();
+      assert.exists(e.controller);
+      assert.equal(e.controller.host, e);
+    });
+
+    test("`controller` handler is not available on LitElement", () => {
+      @withController(SingleHostController)
+      class E extends LitElement {}
+      customElements.define(generateElementName(), E);
+      const e = new E();
+      assert.isFalse("controller" in e);
+    });
+
+    test("`controller` handler is not available if multiple controllers are bind", () => {
+      @withController(SingleHostController)
+      @withController(SingleHostController)
+      class E extends LitElementControllerHost {}
+      customElements.define(generateElementName(), E);
+      const e = new E();
+      assert.notExists(e.controller);
+    });
+
+    test("reactive properties updates the element", async () => {
+      class Controller extends SingleHostController {
+        @state() prop = "foo";
+      }
+      @withController(Controller)
+      class E extends LitElementControllerHost<Controller> {
+        updateCount = 0;
+        updated() {
+          this.updateCount++;
+        }
+      }
+      customElements.define(generateElementName(), E);
+      const e = new E();
+      container.appendChild(e);
+      await e.updateComplete;
+      assert.equal(e.updateCount, 1);
+      e.controller.prop = "bar";
+      await e.controller.updateComplete;
+      await e.updateComplete;
+      assert.equal(e.updateCount, 2);
+    });
+
+    test("batches updates when they are stacked", async () => {
+      const c1 = new SingleHostController();
+      const c2 = new SingleHostController();
+      @withController(c1)
+      @withController(c2)
+      class E extends LitElement {
+        updateCount = 0;
+
+        updated() {
+          this.updateCount++;
+        }
+      }
+      customElements.define(generateElementName(), E);
+      const e = new E();
+      container.appendChild(e);
+      await e.updateComplete;
+      assert.equal(e.updateCount, 1);
+      c1.requestUpdate();
+      c2.requestUpdate();
+      await c1.updateComplete;
+      await c2.updateComplete;
+      await e.updateComplete;
+      assert.equal(e.updateCount, 2);
+    });
+  });
+
+  suite("`MultiHostController`", () => {
+    test("can't be passed as a constructor in the decorator", () => {
+      assert.throws(() => {
+        // @ts-ignore
+        @withController(MultiHostController)
+        class extends LitElement {}
+      }, /can't be used in decorator/);
+    });
+
+    test("extended class can't be passed as a constructor in the decorator", () => {
+      assert.throws(() => {
+        class Controller extends MultiHostController {}
+        // @ts-ignore
+        @withController(Controller)
+        class extends LitElement {}
+      }, /can't be used in decorator/);
+    });
+  });
+
+  test("can receive multiple controllers");
+});

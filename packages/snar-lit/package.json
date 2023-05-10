@@ -1,0 +1,43 @@
+{
+  "name": "@snar/lit",
+  "version": "1.0.0",
+  "main": "./out/index.js",
+  "module": "./out/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./out/controllers/controllers.d.ts",
+      "default": "./out/controllers/controllers.js"
+    }
+  },
+  "scripts": {
+    "build": "wireit",
+    "test": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc --pretty",
+      "clean": "if-file-deleted",
+      "files": [
+        "tsconfig.json",
+        "src/**/*.ts"
+      ],
+      "output": [
+        "out"
+      ]
+    },
+    "test": {
+      "command": "wtr",
+      "dependencies": [
+        "build"
+      ],
+      "files": [
+        "web-test-runner.config.js"
+      ]
+    }
+  },
+  "dependencies": {
+    "lit": "^2.7.4",
+    "snar": "^2.1.0"
+  }
+}

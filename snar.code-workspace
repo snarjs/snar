@@ -1,0 +1,31 @@
+{
+  "folders": [
+    {
+      "name": "snar",
+      "path": "packages/snar"
+    },
+    {
+      "name": "tests",
+      "path": "packages/tests"
+    },
+    {
+      "name": "@snar/lit",
+      "path": "packages/snar-lit"
+    },
+    {
+      "name": "snar-monorepo",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "javascript.preferences.importModuleSpecifierEnding": "js",
+    "files.exclude": {
+      "**/.wireit": true,
+    }
+  },
+  "extensions": {
+    "recommendations": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+  }
+}
