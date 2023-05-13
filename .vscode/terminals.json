@@ -1,0 +1,33 @@
+{
+	"autorun": false,
+	"terminals": [
+		{
+			"name": "/",
+			"icon": "checklist",
+			"focus": true,
+            "cwd": "[workspaceFolder]",
+			"command": ""
+		},
+		{
+			"name": "snar",
+			"icon": "checklist",
+			"focus": true,
+            "cwd": "[workspaceFolder]/packages/snar",
+			"command": ""
+		},
+		{
+			"name": "@snar/lit",
+			"icon": "checklist",
+			"focus": true,
+            "cwd": "[workspaceFolder]/packages/snar-lit",
+			"command": ""
+		},
+		{
+			"name": "tests",
+			"icon": "checklist",
+			"focus": true,
+            "cwd": "[workspaceFolder]/packages/tests",
+			"command": ""
+		}
+	]
+}

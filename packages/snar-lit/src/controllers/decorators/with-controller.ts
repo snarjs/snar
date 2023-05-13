@@ -2,48 +2,46 @@
  * MIT © 2023
  * Valentin Degenne
  */
-import { ReactiveElement } from "lit";
-import { ClassDescriptor, Constructor } from "../../decorators/base.js";
-import { MultiHostController } from "../multi-host-controller.js";
+import {ReactiveElement} from 'lit';
+import {ClassDescriptor, Constructor} from '../../decorators/base.js';
+import {MultiHostController} from '../multi-host-controller.js';
 import {
   LitElementControllerHost,
   // LitElementControllerHost,
   SingleHostController,
-} from "../single-host-controller.js";
+} from '../single-host-controller.js';
 
-type CustomElementClass = Omit<typeof HTMLElement, "new">;
+type CustomElementClass = Omit<typeof HTMLElement, 'new'>;
 
 function hasConstructorNameAsInheritance(
   constructor: Function,
   needle: string
 ) {
   do {
-    if (!("name" in constructor)) {
+    if (!('name' in constructor)) {
       return false;
     }
     if (constructor.name === needle) {
       return true;
     }
-  } while ((constructor = Object.getPrototypeOf(constructor)) !== "");
+  } while ((constructor = Object.getPrototypeOf(constructor)) !== '');
   return false;
 }
 
-// function attachControllerToElement() {}
-
-const legacyWithController = (
+const legacyWithController = <T = unknown>(
   controllerObjectOrConstructor:
-    | typeof SingleHostController
-    | SingleHostController
-    | MultiHostController,
+    | typeof SingleHostController<T>
+    | SingleHostController<T>
+    | MultiHostController<T>,
   clazz: CustomElementClass
 ) => {
   let controller = controllerObjectOrConstructor;
   // Constructor
-  if (typeof controllerObjectOrConstructor === "function") {
+  if (typeof controllerObjectOrConstructor === 'function') {
     if (
       hasConstructorNameAsInheritance(
         controllerObjectOrConstructor,
-        "SingleHostController"
+        'SingleHostController'
       )
     ) {
       (clazz as typeof ReactiveElement).addInitializer(
@@ -63,17 +61,17 @@ const legacyWithController = (
     } else if (
       hasConstructorNameAsInheritance(
         controllerObjectOrConstructor,
-        "MultiHostController"
+        'MultiHostController'
       )
     ) {
       throw new Error(`\`MultiHostController\` can't be used in decorator.
 You will have to create an instance outside and pass the instance in.`);
     } else {
-      throw new Error("You passed an unknown constructor.");
+      throw new Error('You passed an unknown constructor.');
     }
   }
   // Instance
-  else if (typeof controllerObjectOrConstructor === "object") {
+  else if (typeof controllerObjectOrConstructor === 'object') {
     if (controllerObjectOrConstructor instanceof SingleHostController) {
       (clazz as typeof ReactiveElement).addInitializer(
         (instance: ReactiveElement) => {
@@ -93,7 +91,7 @@ You will have to create an instance outside and pass the instance in.`);
       );
     }
   } else {
-    throw new Error("Unknown Type");
+    throw new Error('Unknown Type');
   }
   // Cast as any because TS doesn't recognize the return type as being a
   // subtype of the decorated class when clazz is typed as
@@ -104,20 +102,20 @@ You will have to create an instance outside and pass the instance in.`);
   return clazz as any;
 };
 
-const standardWithController = (
+const standardWithController = <T = unknown>(
   controller:
-    | typeof SingleHostController
-    | SingleHostController
-    | MultiHostController,
+    | typeof SingleHostController<T>
+    | SingleHostController<T>
+    | MultiHostController<T>,
   descriptor: ClassDescriptor
 ) => {
-  const { kind, elements } = descriptor;
+  const {kind, elements} = descriptor;
   return {
     kind,
     elements,
     // This callback is called once the class is otherwise fully defined
     finisher(clazz: Constructor<HTMLElement>) {
-      console.log("we are in standard");
+      console.log('we are in standard');
       // customElements.define(tagName, clazz);
     },
   };
@@ -127,17 +125,17 @@ const standardWithController = (
  * @category Decorator
  * @param controllerClassOrInstance The controller to be used on the custom element
  */
-export function withController(
+export function withController<T = unknown>(
   controllerClassOrInstance:
-    | typeof SingleHostController
-    | SingleHostController
-    | MultiHostController
+    | typeof SingleHostController<T>
+    | SingleHostController<T>
+    | MultiHostController<T>
 ) {
   // Decorating function
   return function (classOrDescriptor: CustomElementClass | ClassDescriptor) {
     // If first argument is a function it's legacy decorator
     // with constructor function
-    if (typeof classOrDescriptor === "function") {
+    if (typeof classOrDescriptor === 'function') {
       // Returns a constructor
       return legacyWithController(controllerClassOrInstance, classOrDescriptor);
     }

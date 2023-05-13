@@ -1,10 +1,16 @@
 {
   "name": "snar",
-  "version": "2.1.2",
+  "description": "Lightweight library for creating reactive objects.",
+  "version": "2.1.5",
   "main": "./out/reactive-object.js",
   "module": "./out/reactive-object.js",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snarjs/snar.git",
+    "directory": "packages/snar"
+  },
   "scripts": {
     "serve": "vite --host --open /dev/",
     "build": "wireit",
@@ -48,11 +54,14 @@
       ]
     }
   },
-  "devDependencies": {
-    "vite": "^4.3.4"
-  },
+  "keywords": [
+    "snar",
+    "reactivity",
+    "vanilla"
+  ],
   "files": [
     "/out/",
-    "!/out/test/"
+    "!/out/test/",
+    "/logo.png"
   ]
 }

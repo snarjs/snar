@@ -30,8 +30,9 @@
       ]
     }
   },
-  "devDependencies": {
-    "lit": "^2.7.3",
-    "snar": "^2.0.2"
+  "dependencies": {
+    "@snar/lit": "^1.2.0",
+    "lit": "^2.7.4",
+    "snar": "^2.1.5"
   }
 }

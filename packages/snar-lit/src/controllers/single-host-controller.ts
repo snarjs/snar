@@ -1,12 +1,19 @@
-import { ReactiveObject } from "snar";
-import { LitElement, ReactiveController, ReactiveControllerHost } from "lit";
+import {ReactiveObject} from 'snar';
+import {LitElement, ReactiveController, ReactiveControllerHost} from 'lit';
 
-export class SingleHostController extends ReactiveObject {
+export class SingleHostController<
+  Interface = unknown
+> extends ReactiveObject<Interface> {
   protected _$host?: ReactiveControllerHost;
 
-  constructor(host?: ReactiveControllerHost) {
-    super();
-    this.host = host;
+  constructor(
+    host?: ReactiveControllerHost,
+    defaultState?: Partial<Interface>
+  ) {
+    super(defaultState);
+    if (host) {
+      this.host = host;
+    }
   }
 
   set host(host: ReactiveControllerHost) {

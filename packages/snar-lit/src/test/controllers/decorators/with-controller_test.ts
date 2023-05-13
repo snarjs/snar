@@ -1,20 +1,20 @@
-import { state } from "snar";
+import {ReactiveObject, state} from 'snar';
 import {
   LitElementControllerHost,
   // LitElementControllerHost,
   SingleHostController,
-} from "../../../controllers/single-host-controller.js";
-import { withController } from "../../../controllers/decorators/with-controller.js";
-import { assert } from "@esm-bundle/chai";
-import { generateElementName } from "../../test-helpers.js";
-import { LitElement } from "lit";
-import { MultiHostController } from "../../../controllers/multi-host-controller.js";
+} from '../../../controllers/single-host-controller.js';
+import {withController} from '../../../controllers/decorators/with-controller.js';
+import {assert} from '@esm-bundle/chai';
+import {generateElementName} from '../../test-helpers.js';
+import {LitElement} from 'lit';
+import {MultiHostController} from '../../../controllers/multi-host-controller.js';
 
-suite("@withController", () => {
+suite('@withController', () => {
   let container: HTMLElement;
 
   setup(() => {
-    container = document.createElement("div");
+    container = document.createElement('div');
     document.body.appendChild(container);
   });
 
@@ -22,8 +22,8 @@ suite("@withController", () => {
     container?.parentNode?.removeChild(container);
   });
 
-  suite("`SingleHostController`", () => {
-    test("connects to the element (object version)", () => {
+  suite('`SingleHostController`', () => {
+    test('connects to the element (object version)', () => {
       const c = new SingleHostController();
       @withController(c)
       class E extends LitElement {}
@@ -35,7 +35,7 @@ suite("@withController", () => {
       // @ts-ignore
       assert.equal(e.__controllers[0].host, e);
     });
-    test("connects to the element (class version)", () => {
+    test('connects to the element (class version)', () => {
       @withController(SingleHostController)
       class E extends LitElementControllerHost {}
       customElements.define(generateElementName(), E);
@@ -46,7 +46,7 @@ suite("@withController", () => {
       assert.equal(e.__controllers[0].host, e);
     });
 
-    test("`controller` handler is available on LitElementControllerHost (object version)", () => {
+    test('`controller` handler is available on LitElementControllerHost (object version)', () => {
       const c = new SingleHostController();
       @withController(c)
       class E extends LitElementControllerHost {}
@@ -56,7 +56,7 @@ suite("@withController", () => {
       assert.equal(e.controller, c);
       assert.equal(e.controller.host, e);
     });
-    test("`controller` handler is available on LitElementControllerHost (class version)", () => {
+    test('`controller` handler is available on LitElementControllerHost (class version)', () => {
       @withController(SingleHostController)
       class E extends LitElementControllerHost {}
       customElements.define(generateElementName(), E);
@@ -65,7 +65,7 @@ suite("@withController", () => {
       assert.equal(e.controller.host, e);
     });
 
-    test("`controller` handler is available on LitElementControllerHost extended class (object version)", () => {
+    test('`controller` handler is available on LitElementControllerHost extended class (object version)', () => {
       class SuperHost extends LitElementControllerHost {}
       const c = new SingleHostController();
       @withController(c)
@@ -75,7 +75,7 @@ suite("@withController", () => {
       assert.exists(e.controller);
       assert.equal(e.controller, c);
     });
-    test("`controller` handler is available on LitElementControllerHost extended class (class version)", () => {
+    test('`controller` handler is available on LitElementControllerHost extended class (class version)', () => {
       class SuperHost extends LitElementControllerHost {}
       @withController(SingleHostController)
       class E extends SuperHost {}
@@ -85,15 +85,15 @@ suite("@withController", () => {
       assert.equal(e.controller.host, e);
     });
 
-    test("`controller` handler is not available on LitElement", () => {
+    test('`controller` handler is not available on LitElement', () => {
       @withController(SingleHostController)
       class E extends LitElement {}
       customElements.define(generateElementName(), E);
       const e = new E();
-      assert.isFalse("controller" in e);
+      assert.isFalse('controller' in e);
     });
 
-    test("`controller` handler is not available if multiple controllers are bind", () => {
+    test('`controller` handler is not available if multiple controllers are bind', () => {
       @withController(SingleHostController)
       @withController(SingleHostController)
       class E extends LitElementControllerHost {}
@@ -102,9 +102,15 @@ suite("@withController", () => {
       assert.notExists(e.controller);
     });
 
-    test("reactive properties updates the element", async () => {
-      class Controller extends SingleHostController {
-        @state() prop = "foo";
+    test('reactive properties updates the element', async () => {
+      interface TestInterface {
+        prop: string;
+      }
+      class Controller
+        extends SingleHostController<TestInterface>
+        implements TestInterface
+      {
+        @state() prop = 'foo';
       }
       @withController(Controller)
       class E extends LitElementControllerHost<Controller> {
@@ -118,13 +124,13 @@ suite("@withController", () => {
       container.appendChild(e);
       await e.updateComplete;
       assert.equal(e.updateCount, 1);
-      e.controller.prop = "bar";
+      e.controller.prop = 'bar';
       await e.controller.updateComplete;
       await e.updateComplete;
       assert.equal(e.updateCount, 2);
     });
 
-    test("batches updates when they are stacked", async () => {
+    test('batches updates when they are stacked', async () => {
       const c1 = new SingleHostController();
       const c2 = new SingleHostController();
       @withController(c1)
@@ -150,7 +156,7 @@ suite("@withController", () => {
     });
   });
 
-  suite("`MultiHostController`", () => {
+  suite('`MultiHostController`', () => {
     test("can't be passed as a constructor in the decorator", () => {
       assert.throws(() => {
         // @ts-ignore
@@ -169,5 +175,5 @@ suite("@withController", () => {
     });
   });
 
-  test("can receive multiple controllers");
+  test('can receive multiple controllers');
 });

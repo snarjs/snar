@@ -310,72 +310,182 @@ suite('ReactiveObject', () => {
       await e.updateComplete;
       assert.equal(e.updateCount, 2);
     });
+  });
 
-    suite('`getLocalStatePropertyNames`', () => {
-      test('returns the list of defined properties', () => {
-        class O extends ReactiveObject {
-          @state() hello = '';
-          @state() world = '';
-        }
-        const o = new O();
-        assert.deepEqual(o.getLocalStatePropertyNames(), ['hello', 'world']);
+  suite('`getLocalStatePropertyNames`', () => {
+    test('returns the list of defined properties', () => {
+      class O extends ReactiveObject {
+        @state() hello = '';
+        @state() world = '';
+      }
+      const o = new O();
+      assert.deepEqual(o.getLocalStatePropertyNames(), ['hello', 'world']);
+    });
+
+    test("returns only current class's properties", async () => {
+      class O extends ReactiveObject {
+        prop = 'foo';
+      }
+      const o = new O();
+      await o.updateComplete;
+
+      class O1 extends ReactiveObject {
+        @state() hello = 'hello';
+        @state() world = 'world';
+      }
+      class O2 extends O1 {
+        @state() foo = 'foo';
+        @state() bar = 'bar';
+      }
+      const o2 = new O2();
+      await o2.updateComplete;
+      assert.deepEqual(o2.getLocalStatePropertyNames(), ['foo', 'bar']);
+    });
+  });
+
+  suite('`getLineageStatePropertyNames`', () => {
+    test('returns the list of defined properties', () => {
+      class O extends ReactiveObject {
+        @state() hello = '';
+        @state() world = '';
+      }
+      const o = new O();
+      assert.deepEqual(o.getLineageStatePropertyNames(), ['hello', 'world']);
+    });
+
+    test("returns lineage class's properties", async () => {
+      class O extends ReactiveObject {
+        prop = 'foo';
+      }
+      const o = new O();
+      await o.updateComplete;
+
+      class O1 extends ReactiveObject {
+        @state() hello = 'hello';
+        @state() world = 'world';
+      }
+      class O2 extends O1 {
+        @state() foo = 'foo';
+        @state() bar = 'bar';
+      }
+      const o2 = new O2();
+      await o2.updateComplete;
+      assert.deepEqual(o2.getLineageStatePropertyNames(), [
+        'hello',
+        'world',
+        'foo',
+        'bar',
+      ]);
+    });
+  });
+
+  suite('toJSON', () => {
+    test('implicitely converts to local state object', async () => {
+      class O1 extends ReactiveObject {
+        @state() parentProp = 'foo';
+      }
+      class O2 extends O1 {
+        @state() prop1 = 'foo';
+        @state() prop2 = 'bar';
+      }
+      const o = new O2();
+      assert.isFalse(o.lineageToJSON);
+      assert.deepEqual(JSON.parse(JSON.stringify(o)), {
+        prop1: 'foo',
+        prop2: 'bar',
       });
-
-      test("returns only current class's properties", async () => {
-        class O extends ReactiveObject {
-          prop = 'foo';
-        }
-        const o = new O();
-        await o.updateComplete;
-
-        class O1 extends ReactiveObject {
-          @state() hello = 'hello';
-          @state() world = 'world';
-        }
-        class O2 extends O1 {
-          @state() foo = 'foo';
-          @state() bar = 'bar';
-        }
-        const o2 = new O2();
-        await o2.updateComplete;
-        assert.deepEqual(o2.getLocalStatePropertyNames(), ['foo', 'bar']);
+      o.prop1 = 'bar';
+      o.prop2 = 'baz';
+      assert.deepEqual(JSON.parse(JSON.stringify(o)), {
+        prop1: 'bar',
+        prop2: 'baz',
       });
     });
 
-    suite('`getLineageStatePropertyNames`', () => {
-      test('returns the list of defined properties', () => {
-        class O extends ReactiveObject {
-          @state() hello = '';
-          @state() world = '';
-        }
-        const o = new O();
-        assert.deepEqual(o.getLineageStatePropertyNames(), ['hello', 'world']);
+    test('`lineageToJSON` switch to lineage state object JSON conversion', async () => {
+      class O1 extends ReactiveObject {
+        @state() parentProp = 'foo';
+      }
+      class O2 extends O1 {
+        @state() prop1 = 'bar';
+        @state() prop2 = 'baz';
+      }
+      const o = new O2();
+      o.lineageToJSON = true;
+      assert.deepEqual(JSON.parse(JSON.stringify(o)), {
+        parentProp: 'foo',
+        prop1: 'bar',
+        prop2: 'baz',
       });
+    });
+  });
 
-      test("returns lineage class's properties", async () => {
-        class O extends ReactiveObject {
-          prop = 'foo';
-        }
-        const o = new O();
-        await o.updateComplete;
+  suite('default state', () => {
+    test('is set from constructor, object updates once.', async () => {
+      interface OInterface {
+        prop1: string;
+        prop2: string;
+      }
+      class O extends ReactiveObject<OInterface> implements OInterface {
+        @state() prop1!: string;
+        @state() prop2!: string;
 
-        class O1 extends ReactiveObject {
-          @state() hello = 'hello';
-          @state() world = 'world';
+        updateCount = 0;
+
+        override updated() {
+          this.updateCount++;
         }
-        class O2 extends O1 {
-          @state() foo = 'foo';
-          @state() bar = 'bar';
+      }
+
+      const o = new O({prop1: 'bar', prop2: 'baz'});
+      await o.updateComplete;
+      assert.equal(o.prop1, 'bar');
+      assert.equal(o.prop2, 'baz');
+      assert.equal(o.updateCount, 1);
+    });
+
+    test('it replaces field values, object updates once.', async () => {
+      interface OInterface {
+        prop1: string;
+        prop2: string;
+      }
+      class O extends ReactiveObject<OInterface> implements OInterface {
+        @state() prop1 = 'foo';
+        @state() prop2 = 'bar';
+
+        updateCount = 0;
+
+        override updated() {
+          this.updateCount++;
         }
-        const o2 = new O2();
-        await o2.updateComplete;
-        assert.deepEqual(o2.getLineageStatePropertyNames(), [
-          'hello',
-          'world',
-          'foo',
-          'bar',
-        ]);
-      });
+      }
+
+      const o = new O({prop1: 'bar', prop2: 'baz'});
+      await o.updateComplete;
+      assert.equal(o.prop1, 'bar');
+      assert.equal(o.prop2, 'baz');
+      assert.equal(o.updateCount, 1);
+    });
+
+    test('replaces lineage properties', async () => {
+      class Parent extends ReactiveObject {
+        @state() propFromParent = 'foo';
+      }
+      class O extends Parent {
+        @state() prop = 'bar';
+
+        updateCount = 0;
+
+        override updated() {
+          this.updateCount++;
+        }
+      }
+
+      const o = new O({propFromParent: 'bar', prop: 'foo'});
+      await o.updateComplete;
+      assert.equal(o.propFromParent, 'bar');
+      assert.equal(o.prop, 'foo');
+      assert.equal(o.updateCount, 1);
     });
   });
 });

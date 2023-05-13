@@ -15,7 +15,7 @@ const defaultPropertyDeclaration: PropertyDeclaration = {
   hasChanged: notEqual,
 };
 
-export class ReactiveObject extends Object {
+export class ReactiveObject<Interface = unknown> extends Object {
   static elementProperties: PropertyDeclarationMap = new Map();
 
   static createProperty(
@@ -42,12 +42,12 @@ export class ReactiveObject extends Object {
       get(): any {
         return (this as {[key: string]: unknown})[key as string];
       },
-      set(this: ReactiveObject, value: unknown) {
+      set(this: ReactiveObject<unknown>, value: unknown) {
         const oldValue = (this as {} as {[key: string]: unknown})[
           name as string
         ];
         (this as {} as {[key: string]: unknown})[key as string] = value;
-        (this as unknown as ReactiveObject).requestUpdate(
+        (this as unknown as ReactiveObject<unknown>).requestUpdate(
           name,
           oldValue,
           options
@@ -70,13 +70,21 @@ export class ReactiveObject extends Object {
 
   private _$changedProperties!: PropertyValues;
 
-  constructor() {
+  #defaultState?: Partial<Interface>;
+
+  constructor(defaultState?: Partial<Interface>) {
     super();
     this._initialize();
+    if (defaultState) {
+      this.#defaultState = defaultState;
+      this.requestUpdate();
+    }
   }
 
+  private resolvedPromise = Promise.resolve(true);
+
   _initialize() {
-    this.__updatePromise = Promise.resolve(true);
+    this.__updatePromise = this.resolvedPromise;
     this._$changedProperties = new Map();
 
     // this.requestUpdate();
@@ -133,6 +141,11 @@ export class ReactiveObject extends Object {
     try {
       shouldUpdate = this.shouldUpdate(changedProperties);
       if (shouldUpdate) {
+        // Set the default state if it was provided
+        // into the constructor.
+        if (this.hasUpdated === false && this.#defaultState) {
+          this.fromObject(this.#defaultState);
+        }
         this.willUpdate(changedProperties);
         this.__update(changedProperties);
         this.update(changedProperties);
@@ -181,13 +194,17 @@ export class ReactiveObject extends Object {
    * This allows users to write code in update() without the
    * need to use super.update().
    */
-  protected __update(_changedProperties: PropertyValues) {}
+  protected __update(_changedProperties: PropertyValues) {
+    // this.update(_changedProperties);
+  }
 
   protected update(_changedProperties: PropertyValues) {}
 
   protected updated(_changedProperties: PropertyValues) {}
 
-  protected __firstUpdated(_changedProperties: PropertyValues) {}
+  protected __firstUpdated(_changedProperties: PropertyValues) {
+    // this.firstUpdated(_changedProperties);
+  }
 
   protected firstUpdated(_changedProperties: PropertyValues) {}
 
@@ -201,6 +218,35 @@ export class ReactiveObject extends Object {
     return [
       ...(this.constructor as typeof ReactiveObject).elementProperties.keys(),
     ].filter((name) => this.hasOwnProperty(`__${String(name)}`));
+  }
+
+  lineageToJSON = false;
+
+  toJSON(): Interface {
+    return Object.fromEntries(
+      (this.lineageToJSON
+        ? this.getLineageStatePropertyNames()
+        : this.getLocalStatePropertyNames()
+      ).map((key) => [key, this[key as keyof this]])
+    ) as Interface;
+  }
+
+  fromObject(state: Partial<Interface>) {
+    // // The state provided needs to reflect the current instance
+    // const statePropertyNames = this.getLineageStatePropertyNames();
+    // console.log(statePropertyNames);
+    // if (
+    //   !Object.keys(state as {}).every((name) =>
+    //     statePropertyNames.includes(name)
+    //   )
+    // ) {
+    //   throw new Error(`The object doesn't reflect the nature of this instance.
+    // Please use the template feature to ensure type coherence throughout your program.`);
+    // }
+
+    for (const [key, value] of Object.entries(state)) {
+      (this as {} as {[key: string]: unknown})[key as string] = value;
+    }
   }
 }
 

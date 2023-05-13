@@ -1,5 +1,17 @@
 # Change Log
 
+## 2.1.5
+
+### Patches
+
+- Provides `toJSON` and `fromObject` as helpers to respectively and conveniently convert object <-> instance.
+
+## 2.1.3
+
+### Patches
+
+- Fix `ReactiveLocalStorage` doesn't update twice on initialization.
+
 ## 2.1.2
 
 ### Minor Changes

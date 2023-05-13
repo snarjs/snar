@@ -12,23 +12,31 @@ export class ReactiveLocalStorage extends ReactiveObject {
     }
   }
 
-  protected override async __update(_changedProperties: PropertyValues) {
+  protected override __update(_changedProperties: PropertyValues) {
     if (this.hasUpdated) {
       this.saveData();
+      // Only call update if data was loaded from localstorage
+      // or if there were any data in the localstorage.
+      // if (this.dataFullyLoaded) {
+      // super.__update(_changedProperties);
+      // }
+    } else {
+      if (!this.loadData()) {
+        // Save default data if localstorage was empty
+        this.saveData();
+      }
     }
+    // super.__update(_changedProperties);
   }
 
-  // private localElementPropertyNames!: PropertyKey[];
+  // override __firstUpdated(_changedProperties: PropertyValues) {
+  //   // if (!this.loadData()) {
+  //   //   // Save default data if localstorage was empty
+  //   //   this.saveData();
+  //   // }
 
-  override __firstUpdated(_changedProperties: PropertyValues) {
-    // this.localElementPropertyNames = [
-    //   ...ReactiveLocalStorage.elementProperties.keys(),
-    // ].filter((name) => this.hasOwnProperty(`__${String(name)}`));
-    if (!this.loadData()) {
-      // Save data if there are none
-      this.saveData();
-    }
-  }
+  //   // super.__firstUpdated(_changedProperties);
+  // }
 
   /**
    * Loads the data from the localstorage

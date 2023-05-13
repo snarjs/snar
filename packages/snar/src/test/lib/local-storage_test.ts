@@ -114,4 +114,32 @@ suite('ReactiveLocalStorage', () => {
     assert.isUndefined(getLocalStorageValue('same-handler').foo);
     assert.equal(getLocalStorageValue('same-handler').bar, 'bar');
   });
+
+  test('`updated` is called once on initialization, array', async () => {
+    class LS extends ReactiveLocalStorage {
+      @state() prop1 = [{a: 1}];
+
+      updateCount = 0;
+
+      override updated() {
+        this.updateCount++;
+      }
+    }
+    assert.equal(getLocalStorageValue('localstorage-handler'), null);
+    const ls1 = new LS('localstorage-handler');
+    await ls1.updateComplete;
+    assert.deepEqual(ls1.prop1, [{a: 1}]);
+    assert.deepEqual(getLocalStorageValue('localstorage-handler').prop1, [
+      {a: 1},
+    ]);
+    assert.equal(ls1.updateCount, 1);
+
+    const ls2 = new LS('localstorage-handler');
+    await ls2.updateComplete;
+    assert.deepEqual(ls2.prop1, [{a: 1}]);
+    assert.deepEqual(getLocalStorageValue('localstorage-handler').prop1, [
+      {a: 1},
+    ]);
+    assert.equal(ls2.updateCount, 1);
+  });
 });

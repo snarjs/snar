@@ -2,7 +2,7 @@ import { ReactiveObject } from "snar";
 import type { PropertyValues } from "snar";
 import type { ReactiveControllerHost } from "lit";
 
-export class MultiHostController extends ReactiveObject {
+export class MultiHostController<T = unknown> extends ReactiveObject<T> {
   protected _hosts!: ReactiveControllerHost[];
 
   addHost(host: ReactiveControllerHost) {

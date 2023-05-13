@@ -1,9 +1,15 @@
 {
   "name": "@snar/lit",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "main": "./out/index.js",
   "module": "./out/index.js",
   "type": "module",
+  "description": "Lit controller helpers built on snar.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snarjs/snar.git",
+    "directory": "packages/snar-lit"
+  },
   "exports": {
     ".": {
       "types": "./out/controllers/controllers.d.ts",
@@ -38,6 +44,10 @@
   },
   "dependencies": {
     "lit": "^2.7.4",
-    "snar": "^2.1.0"
-  }
+    "snar": "^2.1.5"
+  },
+  "files": [
+    "/out",
+    "!/out/test"
+  ]
 }

@@ -43,9 +43,9 @@ yarn add -D snar
 
 ## Relation with [Lit](https://github.com/lit/lit)
 
-_Snar_ base class `ReactiveObject` was made from pruning `ReactiveElement` base class from the _Lit_ package to only keep the _reactivity_ feature.  
+Snar base class `ReactiveObject` was made by pruning `ReactiveElement` base class from `@lit/reactive-element` package of the Lit framework, and only keep the *reactivity* feature.  
 This implies:
 
-- You don't need _Lit_ as a dependency to use this library. In fact **_Snar_ has no dependencies**.
+- You don't need Lit as a dependency to use this library. In fact **Snar has no dependencies**.
 - You can use it in both Node and Browser environment.
-- If you've used _Lit_ before, you'll feel yourself at home because it shares the same syntax.
+- If you've used Lit before, you'll feel yourself at home because it shares the same syntax.
