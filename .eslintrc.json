@@ -1,58 +1,64 @@
 {
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
-  ],
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "sourceType": "module",
-    "ecmaVersion": 2020
-  },
-  "plugins": [
-    // "unused-imports", //
-    "import",
-    "@typescript-eslint"
-  ],
-  "env": {
-    "browser": true
-  },
-  "rules": {
-    "no-prototype-builtins": "off",
-    "@typescript-eslint/no-explicit-any": "error",
-    "@typescript-eslint/ban-types": "off",
-    "@typescript-eslint/no-empty-function": "off",
-    "@typescript-eslint/no-non-null-assertion": "off",
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      {
-        "argsIgnorePattern": "^_"
-      }
-    ]
-    // "unused-imports/no-unused-imports": "warn"
-    // "unused-imports/no-unused-vars": [
-    //   "warn",
-    //   {
-    //     "vars": "all",
-    //     "varsIgnorePattern": "^_",
-    //     "args": "after-used",
-    //     "argsIgnorePattern": "^_"
-    //   }
-    // ]
-  },
-  "overrides": [
-    {
-      "files": ["*_test.ts"],
-      "rules": {
-        "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/ban-ts-comment": "off"
-      }
-    },
-    {
-      "files": ["web-test-runner.config.js"],
-      "env": {
-        "node": true
-      }
-    }
-  ]
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended"
+	],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"sourceType": "module",
+		"ecmaVersion": 2020
+	},
+	"plugins": [
+		// "unused-imports", //
+		"import",
+		"@typescript-eslint"
+	],
+	"env": {
+		"browser": true
+	},
+	"rules": {
+		"no-prototype-builtins": "off",
+		"@typescript-eslint/no-explicit-any": "error",
+		"@typescript-eslint/ban-types": "off",
+		"@typescript-eslint/no-empty-function": "off",
+		"@typescript-eslint/no-non-null-assertion": "off",
+		"@typescript-eslint/no-unused-vars": [
+			"warn",
+			{
+				"argsIgnorePattern": "^_"
+			}
+		]
+		// "unused-imports/no-unused-imports": "warn"
+		// "unused-imports/no-unused-vars": [
+		//   "warn",
+		//   {
+		//     "vars": "all",
+		//     "varsIgnorePattern": "^_",
+		//     "args": "after-used",
+		//     "argsIgnorePattern": "^_"
+		//   }
+		// ]
+	},
+	"overrides": [
+		{
+			"files": ["packages/snar-lit/src/controllers/update-controller.ts"],
+			"rules": {
+				"@typescript-eslint/ban-ts-comment": "off"
+			}
+		},
+		{
+			"files": ["*_test.ts"],
+			"rules": {
+				"@typescript-eslint/no-explicit-any": "off",
+				"@typescript-eslint/ban-ts-comment": "off"
+			}
+		},
+		{
+			"files": ["web-test-runner.config.js"],
+			"env": {
+				"node": true
+			}
+		}
+	]
 }

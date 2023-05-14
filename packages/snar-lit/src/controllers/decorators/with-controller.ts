@@ -1,149 +1,135 @@
 /**
- * MIT © 2023
- * Valentin Degenne
+ * @license
+ * Copyright (c) 2023 Valentin Degenne
+ * SPDX-License-Identifier: MIT
  */
 import {ReactiveElement} from 'lit';
-import {ClassDescriptor, Constructor} from '../../decorators/base.js';
-import {MultiHostController} from '../multi-host-controller.js';
-import {
-  LitElementControllerHost,
-  // LitElementControllerHost,
-  SingleHostController,
-} from '../single-host-controller.js';
+import {ClassDescriptor} from '../../decorators/base.js';
+import {LitElementControllerHost} from '../single-host-controller.js';
+import {ReactiveController} from '../reactive-controller.js';
 
-type CustomElementClass = Omit<typeof HTMLElement, 'new'>;
+// type CustomElementClass = Omit<typeof HTMLElement, 'new'>;
 
-function hasConstructorNameAsInheritance(
-  constructor: Function,
-  needle: string
-) {
-  do {
-    if (!('name' in constructor)) {
-      return false;
-    }
-    if (constructor.name === needle) {
-      return true;
-    }
-  } while ((constructor = Object.getPrototypeOf(constructor)) !== '');
-  return false;
-}
+// function hasConstructorNameAsInheritance(
+// 	constructor: Function,
+// 	needle: string
+// ) {
+// 	do {
+// 		if (!('name' in constructor)) {
+// 			return false;
+// 		}
+// 		if (constructor.name === needle) {
+// 			return true;
+// 		}
+// 	} while ((constructor = Object.getPrototypeOf(constructor)) !== '');
+// 	return false;
+// }
 
-const legacyWithController = <T = unknown>(
-  controllerObjectOrConstructor:
-    | typeof SingleHostController<T>
-    | SingleHostController<T>
-    | MultiHostController<T>,
-  clazz: CustomElementClass
+const legacyWithController = (
+	controllerCtorOrObject: ReactiveController | typeof ReactiveController,
+	clazz: typeof ReactiveElement
 ) => {
-  let controller = controllerObjectOrConstructor;
-  // Constructor
-  if (typeof controllerObjectOrConstructor === 'function') {
-    if (
-      hasConstructorNameAsInheritance(
-        controllerObjectOrConstructor,
-        'SingleHostController'
-      )
-    ) {
-      (clazz as typeof ReactiveElement).addInitializer(
-        (instance: ReactiveElement) => {
-          controller = new controllerObjectOrConstructor(instance);
-          if (instance instanceof LitElementControllerHost) {
-            // Removing the `controller` handler if more than
-            // one controller is bind, to avoid ambiguous contract.
-            if (instance.controller !== undefined) {
-              instance.controller = undefined;
-            } else {
-              instance.controller = controller;
-            }
-          }
-        }
-      );
-    } else if (
-      hasConstructorNameAsInheritance(
-        controllerObjectOrConstructor,
-        'MultiHostController'
-      )
-    ) {
-      throw new Error(`\`MultiHostController\` can't be used in decorator.
-You will have to create an instance outside and pass the instance in.`);
-    } else {
-      throw new Error('You passed an unknown constructor.');
-    }
-  }
-  // Instance
-  else if (typeof controllerObjectOrConstructor === 'object') {
-    if (controllerObjectOrConstructor instanceof SingleHostController) {
-      (clazz as typeof ReactiveElement).addInitializer(
-        (instance: ReactiveElement) => {
-          if (controllerObjectOrConstructor instanceof SingleHostController) {
-            (controller as SingleHostController).host = instance;
-          }
-          if (instance instanceof LitElementControllerHost) {
-            // Removing the `controller` handler if more than
-            // one controller is bind, to avoid ambiguous contract.
-            if (instance.controller !== undefined) {
-              instance.controller = undefined;
-            } else {
-              instance.controller = controllerObjectOrConstructor;
-            }
-          }
-        }
-      );
-    }
-  } else {
-    throw new Error('Unknown Type');
-  }
-  // Cast as any because TS doesn't recognize the return type as being a
-  // subtype of the decorated class when clazz is typed as
-  // `Constructor<HTMLElement>` for some reason.
-  // `Constructor<HTMLElement>` is helpful to make sure the decorator is
-  // applied to elements however.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return clazz as any;
+	// Constructor
+	if (typeof controllerCtorOrObject === 'function') {
+		// if (
+		// 	hasConstructorNameAsInheritance(
+		// 		controllerCtorOrObject,
+		// 		'SingleHostController'
+		// 	)
+		// ) {
+		clazz.addInitializer((element) => {
+			const controller = new controllerCtorOrObject(element);
+			if (element instanceof LitElementControllerHost) {
+				// Removing the `controller` handler if more than
+				// one controller is bind, to avoid ambiguous contract.
+				if (element.controller !== undefined) {
+					element.controller = undefined;
+				} else {
+					element.controller = controller;
+				}
+			}
+		});
+		// 		} else if (
+		// 			hasConstructorNameAsInheritance(
+		// 				controllerCtorOrObject,
+		// 				'MultiHostController'
+		// 			)
+		// 		) {
+		// 			throw new Error(`\`MultiHostController\` can't be used in decorator.
+		// You will have to create an instance outside and pass the instance in.`);
+		// 		} else {
+		// 			throw new Error('You passed an unknown constructor.');
+		// 		}
+	}
+	// Instance
+	else if (typeof controllerCtorOrObject === 'object') {
+		// if (controllerCtorOrObject instanceof SingleHostController) {
+		clazz.addInitializer((element) => {
+			// if (controllerCtorOrObject instanceof SingleHostController) {
+			// (controller as SingleHostController).host = element;
+			controllerCtorOrObject.bind(element);
+			// }
+			if (element instanceof LitElementControllerHost) {
+				// Removing the `controller` handler if more than
+				// one controller is bind, to avoid ambiguous contract.
+				if (element.controller !== undefined) {
+					element.controller = undefined;
+				} else {
+					element.controller = controllerCtorOrObject;
+				}
+			}
+		});
+		// }
+	} else {
+		throw new Error('Unknown Type');
+	}
+	// Cast as any because TS doesn't recognize the return type as being a
+	// subtype of the decorated class when clazz is typed as
+	// `Constructor<HTMLElement>` for some reason.
+	// `Constructor<HTMLElement>` is helpful to make sure the decorator is
+	// applied to elements however.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return clazz as any;
 };
 
-const standardWithController = <T = unknown>(
-  controller:
-    | typeof SingleHostController<T>
-    | SingleHostController<T>
-    | MultiHostController<T>,
-  descriptor: ClassDescriptor
+const standardWithController = (
+	controller: ReactiveController | typeof ReactiveController,
+	descriptor: ClassDescriptor
 ) => {
-  const {kind, elements} = descriptor;
-  return {
-    kind,
-    elements,
-    // This callback is called once the class is otherwise fully defined
-    finisher(clazz: Constructor<HTMLElement>) {
-      console.log('we are in standard');
-      // customElements.define(tagName, clazz);
-    },
-  };
+	const {kind, elements} = descriptor;
+	return {
+		kind,
+		elements,
+		// This callback is called once the class is otherwise fully defined
+		finisher(/*clazz: Constructor<HTMLElement>*/) {
+			console.log('we are in standard');
+			// customElements.define(tagName, clazz);
+		},
+	};
 };
 
 /**
  * @category Decorator
  * @param controllerClassOrInstance The controller to be used on the custom element
  */
-export function withController<T = unknown>(
-  controllerClassOrInstance:
-    | typeof SingleHostController<T>
-    | SingleHostController<T>
-    | MultiHostController<T>
+export function withController(
+	controllerClassOrInstance: ReactiveController | typeof ReactiveController
 ) {
-  // Decorating function
-  return function (classOrDescriptor: CustomElementClass | ClassDescriptor) {
-    // If first argument is a function it's legacy decorator
-    // with constructor function
-    if (typeof classOrDescriptor === 'function') {
-      // Returns a constructor
-      return legacyWithController(controllerClassOrInstance, classOrDescriptor);
-    }
-    // Else we are in the decorator spec and first argument is a descriptor.
-    // Returns a descriptor
-    return standardWithController(
-      controllerClassOrInstance,
-      classOrDescriptor as ClassDescriptor
-    );
-  };
+	// Decorating function
+	return function (
+		classOrDescriptor: typeof ReactiveElement | ClassDescriptor
+	) {
+		// If first argument is a function it's legacy decorator
+		// with constructor function
+		if (typeof classOrDescriptor === 'function') {
+			// Returns a constructor
+			return legacyWithController(controllerClassOrInstance, classOrDescriptor);
+		}
+		// Else we are in the decorator spec and first argument is a descriptor.
+		// Returns a descriptor
+		return standardWithController(
+			controllerClassOrInstance,
+			classOrDescriptor as ClassDescriptor
+		);
+	};
 }

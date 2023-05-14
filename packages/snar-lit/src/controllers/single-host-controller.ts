@@ -1,42 +1,47 @@
+/**
+ * @license
+ * Copyright (c) 2023 Valentin Degenne
+ * SPDX-License-Identifier: MIT
+ */
 import {ReactiveObject} from 'snar';
 import {LitElement, ReactiveController, ReactiveControllerHost} from 'lit';
 
 export class SingleHostController<
-  Interface = unknown
+	Interface = unknown
 > extends ReactiveObject<Interface> {
-  protected _$host?: ReactiveControllerHost;
+	protected _$host?: ReactiveControllerHost;
 
-  constructor(
-    host?: ReactiveControllerHost,
-    defaultState?: Partial<Interface>
-  ) {
-    super(defaultState);
-    if (host) {
-      this.host = host;
-    }
-  }
+	constructor(
+		host?: ReactiveControllerHost,
+		defaultState?: Partial<Interface>
+	) {
+		super(defaultState);
+		if (host) {
+			this.host = host;
+		}
+	}
 
-  set host(host: ReactiveControllerHost) {
-    if (this._$host) {
-      this._$host.removeController(this as ReactiveController);
-    }
-    this._$host = host;
-    if (host) {
-      host.addController(this as ReactiveController);
-    }
-  }
+	set host(host: ReactiveControllerHost) {
+		if (this._$host) {
+			this._$host.removeController(this as ReactiveController);
+		}
+		this._$host = host;
+		if (host) {
+			host.addController(this as ReactiveController);
+		}
+	}
 
-  get host() {
-    return this._$host;
-  }
+	get host() {
+		return this._$host;
+	}
 
-  protected override __update() {
-    this._$host?.requestUpdate();
-  }
+	protected override __update() {
+		this._$host?.requestUpdate();
+	}
 }
 
 export class LitElementControllerHost<
-  T = SingleHostController
+	T = SingleHostController
 > extends LitElement {
-  controller: T;
+	controller: T;
 }

@@ -5,12 +5,12 @@
       "path": "packages/snar"
     },
     {
-      "name": "tests",
-      "path": "packages/tests"
-    },
-    {
       "name": "@snar/lit",
       "path": "packages/snar-lit"
+    },
+    {
+      "name": "tests",
+      "path": "packages/tests"
     },
     {
       "name": "snar-monorepo",
