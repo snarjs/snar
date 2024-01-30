@@ -4,3 +4,4 @@
  * SPDX-License-Identifier: MIT
  */
 export * from './controllers/controllers.js';
+export {state} from 'snar';

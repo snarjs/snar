@@ -5,7 +5,7 @@
  */
 import {ReactiveElement} from 'lit';
 import {ClassDescriptor} from '../../decorators/base.js';
-import {LitElementControllerHost} from '../single-host-controller.js';
+import {LitElementControllerHost} from '../reactive-controller.js';
 import {ReactiveController} from '../reactive-controller.js';
 
 // type CustomElementClass = Omit<typeof HTMLElement, 'new'>;

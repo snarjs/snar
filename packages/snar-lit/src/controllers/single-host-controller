@@ -40,8 +40,3 @@ export class SingleHostController<
 	}
 }
 
-export class LitElementControllerHost<
-	T = SingleHostController
-> extends LitElement {
-	controller: T;
-}

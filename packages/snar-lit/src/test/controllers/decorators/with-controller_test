@@ -1,4 +1,4 @@
-import {ReactiveObject, state} from 'snar';
+import {state} from 'snar';
 import {
   LitElementControllerHost,
   // LitElementControllerHost,
