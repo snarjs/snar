@@ -1,7 +1,7 @@
 {
   "name": "snar",
   "description": "Lightweight library for creating reactive objects.",
-  "version": "2.1.5",
+  "version": "2.2.0",
   "main": "./out/reactive-object.js",
   "module": "./out/reactive-object.js",
   "type": "module",

@@ -23,6 +23,13 @@
 			"command": ""
 		},
 		{
+			"name": "site",
+			"icon": "checklist",
+			"focus": true,
+            "cwd": "[workspaceFolder]/packages/site",
+			"command": ""
+		},
+		{
 			"name": "tests",
 			"icon": "checklist",
 			"focus": true,

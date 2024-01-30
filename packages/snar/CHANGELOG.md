@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.2.0
+
+### Patches
+
+- [lib/localstorage] removed reflection system in favor of manual replacement.
+
 ## 2.1.5
 
 ### Patches

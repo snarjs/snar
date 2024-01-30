@@ -1,43 +1,86 @@
-/**
- * @license
- * Copyright (c) 2023 Valentin Degenne
- * SPDX-License-Identifier: MIT
- */
-// import {state} from 'snar';
-// import {ReactiveLocalStorage} from 'snar/lib/localstorage.js';
-import {ReactiveController, withController} from '@snar/lit';
-import {LitElement} from 'lit';
-import {when} from 'lit/directives/when.js';
-import {PropertyValues, state} from 'snar';
+// lit
+import {LitElement, html} from 'lit';
+import {customElement, state, query} from 'lit/decorators.js';
+import {choose} from 'lit/directives/choose.js';
+import {ReactiveController} from '@snar/lit';
 
-class TrafficLightSys extends ReactiveController {
-	@state() red = true;
-	@state() green = false;
+class Timer extends ReactiveController {
+  static States = {IDLE: 0, PAUSED: 1, RUNNING: 2};
 
-	updated(changed: PropertyValues) {
-		if (changed.has('green')) {
-			this.red = !this.green;
-		} else {
-			this.green = !this.red;
-		}
-	}
+  @state() state = Timer.States.IDLE;
+  @state() value = 0;
+
+  start() {
+    this.state = Timer.States.RUNNING;
+    this._createInterval();
+  }
+
+  stop() {
+    this._clearInterval();
+    this.state = Timer.States.IDLE;
+    this.value = 0;
+  }
+
+  pause() {
+    this.state = Timer.States.PAUSED;
+    this._clearInterval();
+  }
+
+  _interval = null;
+  _createInterval() {
+    this._clearInterval();
+    this._interval = setInterval(() => (this.value += 1), 1000);
+  }
+  _clearInterval() { clearInterval(this._interval) }
+
+  updated() {
+    console.log('Timer value changed!');
+  }
 }
 
-const ctrl = new TrafficLightSys();
+@customElement('timer-buttons')
+class TimerButtons extends LitElement {
+  timer!: Timer;
 
-@withController(ctrl)
-class GreenLight extends LitElement {
-	render = () => when(ctrl.green, () => `green`);
+  render = () => choose(this.timer.state, [
+      [Timer.States.IDLE, () => html` <button @click=${() => this.timer.start()}>Start</button> `],
+      [Timer.States.RUNNING, () => html`
+          <button @click=${() => this.timer.stop()}>Stop</button>
+          <button @click=${() => this.timer.pause()}>Pause</button>
+      `],
+      [Timer.States.PAUSED, () => html`
+          <button @click=${() => this.timer.stop()}>Stop</button>
+          <button @click=${() => this.timer.start()}>Resume</button>
+      `]
+    ]);
 }
 
-@withController(ctrl)
-class RedLight extends LitElement {
-	render = () => when(ctrl.red, () => `red`);
+@customElement('timer-display')
+class TimerDisplay extends LitElement {
+  timer!: Timer;
+
+  render = () => html`${this.timer.value} <button @click=${() => this.timer.stop()}>stop (from TimerDisplay)</button>`;
 }
 
-window.customElements.define('green-light', GreenLight);
-window.customElements.define('red-light', RedLight);
-document.body.appendChild(new GreenLight());
-document.body.appendChild(new RedLight());
+@customElement('app-container')
+class AppContainer extends LitElement {
+  timer = new Timer(this); // timer reactive controller
 
-console.log(ctrl);
+  @query('timer-buttons') timerButtons!: TimerButtons;
+  @query('timer-display') timerDisplay!: TimerDisplay;
+
+  render() {
+    return html` <header>Timer App</header>
+      <navigation></navigation>
+      <content>
+        <timer-buttons></timer-buttons><br /><br />
+        <timer-display></timer-display>
+      </content>
+      <footer></footer>`;
+  }
+
+  firstUpdated() { // "consumers"
+    this.timer.bind(this.timerButtons, 'timer');
+    this.timer.bind(this.timerDisplay, 'timer');
+  }
+}

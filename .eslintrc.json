@@ -55,7 +55,7 @@
 			}
 		},
 		{
-			"files": ["web-test-runner.config.js"],
+			"files": ["web-test-runner.config.js", "packages/site/eleventy.config.cjs"],
 			"env": {
 				"node": true
 			}

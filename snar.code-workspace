@@ -13,6 +13,10 @@
       "path": "packages/tests"
     },
     {
+      "name": "site",
+      "path": "packages/site"
+    },
+    {
       "name": "snar-monorepo",
       "path": "."
     }

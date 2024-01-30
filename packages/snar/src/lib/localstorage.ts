@@ -48,20 +48,20 @@ export class ReactiveLocalStorage extends ReactiveObject {
     if (localData) {
       const parsedData = JSON.parse(localData);
 
-      if (
-        !this.getLocalStatePropertyNames().every((name) =>
-          parsedData.hasOwnProperty(name)
-        )
-      ) {
-        if (!this.overwrite) {
-          throw new Error(`The localstorage doesn't reflect the state of this object.
-If you know what you are doing, you can pass true as a second argument in the constructor,
-to override the existing data in the localstorage.`);
-        } else {
-          this.saveData();
-          return;
-        }
-      }
+//       if (
+//         !this.getLocalStatePropertyNames().every((name) =>
+//           parsedData.hasOwnProperty(name)
+//         )
+//       ) {
+//         if (!this.overwrite) {
+//           throw new Error(`The localstorage doesn't reflect the state of this object.
+// If you know what you are doing, you can pass true as a second argument in the constructor,
+// to override the existing data in the localstorage.`);
+//         } else {
+//           this.saveData();
+//           return;
+//         }
+//       }
 
       for (const [name, value] of Object.entries(parsedData)) {
         if (this.getLocalStatePropertyNames().includes(name)) {

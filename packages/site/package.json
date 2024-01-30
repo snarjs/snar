@@ -1,0 +1,34 @@
+{
+	"name": "snar-site",
+	"type": "module",
+	"scripts": {
+		"build:dev": "wireit",
+		"serve:dev": "wireit"
+	},
+	"wireit": {
+		"build:dev": {
+			"command": "eleventy",
+			"files": [
+				"site",
+				"eleventy.config.cjs"
+			],
+			"output": [
+				"_dev"
+			]
+		},
+		"serve:dev": {
+			"command": "vite _dev",
+			"service": true,
+			"dependencies": [
+				{
+					"script": "build:dev",
+					"cascade": true
+				}
+			]
+		}
+	},
+	"devDependencies": {
+		"@11ty/eleventy": "^2.0.1",
+		"vite": "^4.3.7"
+	}
+}
