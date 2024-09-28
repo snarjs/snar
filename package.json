@@ -1,38 +1,35 @@
 {
-  "name": "@snar-internal/monorepo",
-  "private": true,
-  "type": "module",
-  "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=7.0.0"
-  },
-  "bin": {
-    "hihi": "scripts/hihi.js"
-  },
-  "scripts": {
-    "prepare": "husky install"
-  },
-  "workspaces": [
-    "packages/*"
-  ],
-  "devDependencies": {
-    "@changesets/cli": "^2.27.1",
-    "@esm-bundle/chai": "^4.3.4",
-    "@types/chai": "^4.3.1",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^20.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.59.1",
-    "@web/test-runner": "^0.16.0",
-    "@web/test-runner-playwright": "^0.10.0",
-    "eslint": "^8.39.0",
-    "eslint-plugin-import": "^2.27.5",
-    "husky": "^8.0.3",
-    "lint-staged": "^13.2.2",
-    "prettier": "^2.8.8",
-    "typescript": "^5.0.4",
-    "wireit": "^0.9.5"
-  },
-  "lint-staged": {
-    "**/*.{cjs,html,js,json,md,ts}": "prettier --write"
-  }
+	"name": "@snar-internal/monorepo",
+	"private": true,
+	"type": "module",
+	"engines": {
+		"node": ">=16.0.0",
+		"npm": ">=7.0.0"
+	},
+	"scripts": {
+		"prepare": "husky install"
+	},
+	"workspaces": [
+		"packages/*"
+	],
+	"devDependencies": {
+		"@changesets/cli": "^2.27.8",
+		"@esm-bundle/chai": "^4.3.4",
+		"@types/chai": "^5.0.0",
+		"@types/mocha": "^10.0.8",
+		"@types/node": "^22.7.4",
+		"@typescript-eslint/eslint-plugin": "^8.7.0",
+		"@web/test-runner": "^0.19.0",
+		"@web/test-runner-playwright": "^0.11.0",
+		"eslint": "^8.0.0",
+		"eslint-plugin-import": "^2.30.0",
+		"husky": "^9.1.6",
+		"lint-staged": "^15.2.10",
+		"prettier": "^3.3.3",
+		"typescript": "^5.6.2",
+		"wireit": "^0.14.9"
+	},
+	"lint-staged": {
+		"**/*.{cjs,html,js,json,md,ts}": "prettier --write"
+	}
 }

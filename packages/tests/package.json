@@ -32,7 +32,7 @@
 		}
 	},
 	"dependencies": {
-		"@snar/lit": "^1.2.0",
+		"@snar/lit": "^1.6.0",
 		"lit": "^2.7.4",
 		"snar": "^2.1.5"
 	}
