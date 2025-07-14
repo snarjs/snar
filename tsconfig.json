@@ -9,6 +9,7 @@
 		"inlineSources": true,
 		"outDir": "./out",
 		"strict": true,
+		"useDefineForClassFields": false,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"noImplicitReturns": true,
