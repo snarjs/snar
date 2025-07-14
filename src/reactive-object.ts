@@ -16,8 +16,10 @@ const defaultPropertyDeclaration: PropertyDeclaration = {
 	hasChanged: notEqual,
 }
 
-type UpdateCall<T> = (changed: PropertyValues<T>) => Promise<void> | void
-export type UpdateCalls<T> = UpdateCall<T> | UpdateCall<T>[]
+export type UpdatedCall<T> = (
+	changed: PropertyValues<T>,
+) => Promise<void> | void
+// export type UpdateCall<T> = UpdateCall<T> | UpdateCall<T>[]
 
 export class ReactiveObject<Interface = any> extends Object {
 	static elementProperties: PropertyDeclarationMap = new Map()
@@ -71,7 +73,7 @@ export class ReactiveObject<Interface = any> extends Object {
 	hasUpdated = false
 	private _$changedProperties!: PropertyValues
 	#defaultState?: Partial<Interface>
-	updateCallbacks: UpdateCalls<this> = []
+	onupdated: UpdatedCall<this> | undefined
 
 	constructor(defaultState?: Partial<Interface>) {
 		super()
@@ -203,11 +205,14 @@ export class ReactiveObject<Interface = any> extends Object {
 
 	protected async __updated(_changedProperties: PropertyValues<this>) {
 		await this.updated(_changedProperties)
-		await Promise.all(
-			(<UpdateCall<this>[]>[])
-				.concat(this.updateCallbacks)
-				.map((cb) => cb(_changedProperties)),
-		)
+		if (this.onupdated) {
+			await this.onupdated(_changedProperties)
+		}
+		// await Promise.all(
+		// 	(<UpdatedCall<this>[]>[])
+		// 		.concat(this.onupdated)
+		// 		.map((cb) => cb(_changedProperties)),
+		// )
 		this.__postUpdated(_changedProperties)
 	}
 	protected updated(
