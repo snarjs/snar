@@ -7,10 +7,8 @@
 		"declarationMap": true,
 		"sourceMap": true,
 		"inlineSources": true,
-		"outDir": "out",
-		"rootDir": "src",
+		"outDir": "./out",
 		"strict": true,
-		"useDefineForClassFields": false,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"noImplicitReturns": true,
@@ -20,7 +18,5 @@
 		"allowSyntheticDefaultImports": true,
 		"experimentalDecorators": true,
 		"noImplicitOverride": true
-	},
-	"include": ["./src/**/*.ts"],
-	"exclude": ["./src/test/"]
+	}
 }
