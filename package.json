@@ -1,67 +1,71 @@
 {
-  "name": "snar",
-  "description": "Lightweight library for creating reactive objects.",
-  "version": "2.3.1",
-  "type": "module",
-  "main": "./out/reactive-object.js",
-  "module": "./out/reactive-object.js",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/snarjs/snar.git",
-    "directory": "packages/snar"
-  },
-  "scripts": {
-    "serve": "vite --host --open /dev/",
-    "build": "wireit",
-    "test": "wireit"
-  },
-  "exports": {
-    ".": {
-      "types": "./out/reactive-object.d.ts",
-      "default": "./out/reactive-object.js"
-    },
-    "./lib/localstorage.js": {
-      "types": "./out/lib/localstorage.d.ts",
-      "default": "./out/lib/localstorage.js"
-    }
-  },
-  "wireit": {
-    "build": {
-      "dependencies": [
-        "build:ts"
-      ]
-    },
-    "build:ts": {
-      "command": "tsc --pretty",
-      "clean": "if-file-deleted",
-      "files": [
-        "./src/**/*.ts",
-        "./tsconfig.json"
-      ],
-      "output": [
-        "./out/**/*.{js,js.map,d.ts,d.ts.map}",
-        "./tsconfig.tsbuildinfo"
-      ]
-    },
-    "test": {
-      "command": "wtr",
-      "files": [
-        "web-test-runner.config.js"
-      ],
-      "dependencies": [
-        "build:ts"
-      ]
-    }
-  },
-  "keywords": [
-    "snar",
-    "reactivity",
-    "vanilla"
-  ],
-  "files": [
-    "./out/",
-    "!./out/test/",
-    "./logo.png"
-  ]
+	"name": "snar",
+	"description": "Lightweight library for creating reactive objects.",
+	"version": "2.3.1",
+	"type": "module",
+	"main": "./out/reactive-object.js",
+	"module": "./out/reactive-object.js",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/snarjs/snar.git",
+		"directory": "packages/snar"
+	},
+	"scripts": {
+		"serve": "vite --host --open /dev/",
+		"build": "wireit",
+		"test": "wireit"
+	},
+	"exports": {
+		".": {
+			"types": "./out/reactive-object.d.ts",
+			"default": "./out/reactive-object.js"
+		},
+		"./lib/localstorage.js": {
+			"types": "./out/lib/localstorage.d.ts",
+			"default": "./out/lib/localstorage.js"
+		}
+	},
+	"wireit": {
+		"build": {
+			"dependencies": [
+				"build:ts"
+			]
+		},
+		"build:ts": {
+			"command": "tsc --pretty",
+			"clean": "if-file-deleted",
+			"files": [
+				"./src/**/*.ts",
+				"./tsconfig.json"
+			],
+			"output": [
+				"./out/**/*.{js,js.map,d.ts,d.ts.map}",
+				"./tsconfig.tsbuildinfo"
+			]
+		},
+		"test": {
+			"command": "wtr",
+			"files": [
+				"web-test-runner.config.js"
+			],
+			"dependencies": [
+				"build:ts"
+			]
+		}
+	},
+	"keywords": [
+		"snar",
+		"reactivity",
+		"vanilla"
+	],
+	"files": [
+		"./out/",
+		"!./out/test/",
+		"./logo.png"
+	],
+	"devDependencies": {
+		"typescript": "^5.8.3",
+		"wireit": "^0.14.12"
+	}
 }
