@@ -16,6 +16,9 @@ const defaultPropertyDeclaration: PropertyDeclaration = {
 	hasChanged: notEqual,
 }
 
+type UpdateCall<T> = (changed: PropertyValues<T>) => Promise<void> | void
+export type UpdateCalls<T> = UpdateCall<T> | UpdateCall<T>[]
+
 export class ReactiveObject<Interface = any> extends Object {
 	static elementProperties: PropertyDeclarationMap = new Map()
 
@@ -64,14 +67,11 @@ export class ReactiveObject<Interface = any> extends Object {
 	}
 
 	private __updatePromise!: Promise<boolean>
-
 	isUpdatePending = false
-
 	hasUpdated = false
-
 	private _$changedProperties!: PropertyValues
-
 	#defaultState?: Partial<Interface>
+	updateCallbacks: UpdateCalls<this> = []
 
 	constructor(defaultState?: Partial<Interface>) {
 		super()
@@ -138,7 +138,7 @@ export class ReactiveObject<Interface = any> extends Object {
 			return
 		}
 		let shouldUpdate = false
-		const changedProperties = this._$changedProperties
+		const changedProperties = this._$changedProperties as PropertyValues<this>
 		try {
 			shouldUpdate = this.shouldUpdate(changedProperties)
 			if (shouldUpdate) {
@@ -162,9 +162,9 @@ export class ReactiveObject<Interface = any> extends Object {
 		}
 	}
 
-	protected willUpdate(_changedProperties: PropertyValues): void {}
+	protected willUpdate(_changedProperties: PropertyValues<this>): void {}
 
-	_$didUpdate(changedProperties: PropertyValues) {
+	_$didUpdate(changedProperties: PropertyValues<this>) {
 		if (!this.hasUpdated) {
 			this.hasUpdated = true
 			this.__firstUpdated(changedProperties)
@@ -201,11 +201,18 @@ export class ReactiveObject<Interface = any> extends Object {
 
 	protected update(_changedProperties: PropertyValues) {}
 
-	protected async __updated(_changedProperties: PropertyValues) {
+	protected async __updated(_changedProperties: PropertyValues<this>) {
 		await this.updated(_changedProperties)
+		await Promise.all(
+			(<UpdateCall<this>[]>[])
+				.concat(this.updateCallbacks)
+				.map((cb) => cb(_changedProperties)),
+		)
 		this.__postUpdated(_changedProperties)
 	}
-	protected updated(_changedProperties: PropertyValues): Promise<void> | void {}
+	protected updated(
+		_changedProperties: PropertyValues<this>,
+	): Promise<void> | void {}
 
 	protected __firstUpdated(_changedProperties: PropertyValues) {
 		// this.firstUpdated(_changedProperties);

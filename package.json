@@ -18,12 +18,12 @@
 	},
 	"exports": {
 		".": {
-			"types": "./out/reactive-object.d.ts",
-			"default": "./out/reactive-object.js"
+			"import": "./out/reactive-object.js",
+			"types": "./out/reactive-object.d.ts"
 		},
 		"./lib/localstorage.js": {
-			"types": "./out/lib/localstorage.d.ts",
-			"default": "./out/lib/localstorage.js"
+			"import": "./out/lib/localstorage.js",
+			"types": "./out/lib/localstorage.d.ts"
 		}
 	},
 	"wireit": {
