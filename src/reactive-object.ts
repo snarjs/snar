@@ -73,7 +73,6 @@ export class ReactiveObject<Interface = any> extends Object {
 	hasUpdated = false
 	private _$changedProperties!: PropertyValues
 	#defaultState?: Partial<Interface>
-	onupdated: UpdatedCall<this> | undefined
 
 	constructor(defaultState?: Partial<Interface>) {
 		super()
@@ -205,9 +204,9 @@ export class ReactiveObject<Interface = any> extends Object {
 
 	protected async __updated(_changedProperties: PropertyValues<this>) {
 		await this.updated(_changedProperties)
-		if (this.onupdated) {
-			await this.onupdated(_changedProperties)
-		}
+		// if (this.onupdated) {
+		// 	await this.onupdated(_changedProperties)
+		// }
 		// await Promise.all(
 		// 	(<UpdatedCall<this>[]>[])
 		// 		.concat(this.onupdated)
